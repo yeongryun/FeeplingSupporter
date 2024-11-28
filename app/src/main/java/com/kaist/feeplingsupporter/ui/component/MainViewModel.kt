@@ -1,8 +1,12 @@
 package com.kaist.feeplingsupporter.ui.component
 
+import android.app.Application
 import android.graphics.Bitmap
-import androidx.lifecycle.ViewModel
-import com.kaist.feeplingsupporter.ui.data.EmotionWords
+import androidx.lifecycle.AndroidViewModel
+import com.kaist.feeplingsupporter.ui.data.AgeGroup
+import com.kaist.feeplingsupporter.ui.data.EmotionWord
+import com.kaist.feeplingsupporter.ui.data.Gender
+import com.kaist.feeplingsupporter.ui.data.Solution
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -15,9 +19,9 @@ private const val alpah = 0.25
 private const val beta = 0.25
 private const val gamma = 0.5
 
-class MainViewModel: ViewModel() {
-    val emotionDetector = EmotionDetector()
-    val wordsList = EmotionWords.entries
+class MainViewModel(app: Application): AndroidViewModel(app) {
+    private val emotionDetector = EmotionDetector()
+    private val wordsList = EmotionWord.entries
 
     private val executor = Executors.newSingleThreadExecutor()
     private val dispatcher = executor.asCoroutineDispatcher()
@@ -32,31 +36,29 @@ class MainViewModel: ViewModel() {
     private var detectedHrvEmotion: EmotionDegree = 0.0
 
     val sumDetectedEmotion: EmotionDegree
-        get() = alpah * detectedSelfieEmotion + beta * detectedWordsEmotion + gamma * detectedHrvEmotion
+        get() = alpah * detectedSelfieEmotion + beta * detectedHrvEmotion + gamma * detectedWordsEmotion * 100
 
-    // selfie Image
-    fun getSelfieImage(): Bitmap = TODO()
 
     // Hrv Data
     fun getHrvData(): Double = TODO()
-
-    suspend fun detectSelfieEmotion(): EmotionDegree = withContext(scope.coroutineContext + job) {
-        val emotionDegree = emotionDetector.detectWithSelfieImage(getSelfieImage())
-        detectedSelfieEmotion = emotionDegree
-        emotionDegree
-    }
-
-    suspend fun detectWithWords(words : List<EmotionWords>) = withContext(scope.coroutineContext + job) {
-        val emotionDegree = emotionDetector.detectWithWords(words)
-        detectedWordsEmotion = emotionDegree
-        emotionDegree
-    }
-
-    suspend fun detectWithAdjustedHrv(hrv: Double, age: Int, gender: Gender) = withContext(scope.coroutineContext + job) {
-        val emotionDegree = emotionDetector.detectWithAdjustedHrv(hrv, age, gender)
-        detectedHrvEmotion = emotionDegree
-        emotionDegree
-    }
+//
+//    suspend fun detectSelfieEmotion(): EmotionDegree = withContext(scope.coroutineContext + job) {
+//        val emotionDegree = emotionDetector.detectWithSelfieImage(getSelfieImage())
+//        detectedSelfieEmotion = emotionDegree
+//        emotionDegree
+//    }
+//
+//    suspend fun detectWithWords(words : List<EmotionWord>) = withContext(scope.coroutineContext + job) {
+//        val emotionDegree = emotionDetector.detectWithWords(words)
+//        detectedWordsEmotion = emotionDegree
+//        emotionDegree
+//    }
+//
+//    suspend fun detectWithAdjustedHrv(hrv: Double, age: Int, gender: Gender) = withContext(scope.coroutineContext + job) {
+//        val emotionDegree = emotionDetector.detectWithAdjustedHrv(hrv, age, gender)
+//        detectedHrvEmotion = emotionDegree
+//        emotionDegree
+//    }
 
     suspend fun reset() {
         job.cancelAndJoin()
@@ -66,6 +68,11 @@ class MainViewModel: ViewModel() {
         detectedHrvEmotion = 0.0
     }
 
+    fun chooseSolution(ageGroup: AgeGroup, gender: Gender) {
+        val results = Solution.values().filter { it.gender == ageGroup && it.gender == gender }
+
+        val s = results.map { it.solution }
+    }
     private fun handleError(throwable: Throwable): Unit = TODO()
 
     override fun onCleared() {

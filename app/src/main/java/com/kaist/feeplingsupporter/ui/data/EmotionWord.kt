@@ -2,7 +2,7 @@ package com.kaist.feeplingsupporter.ui.data
 
 import com.kaist.feeplingsupporter.ui.component.EmotionDegree
 
-enum class EmotionWords(val subtitle: EmotionSubTitle) {
+enum class EmotionWord(val subtitle: EmotionSubTitle) {
     Contempt(EmotionSubTitle.Disgust),
     Disgust(EmotionSubTitle.Disgust),
     Revulsion(EmotionSubTitle.Disgust),
