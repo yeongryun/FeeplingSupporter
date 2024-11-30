@@ -192,7 +192,7 @@ fun WordsSelectionScreen(mainViewModel: MainViewModel, selected: (List<EmotionWo
             fontWeight = FontWeight.Light,
             fontStyle = FontStyle.Italic,
             fontSize = 10.sp,
-            color = Color.LightGray,
+            color = Color.DarkGray,
             style = MaterialTheme.typography.bodySmall,
         )
 
