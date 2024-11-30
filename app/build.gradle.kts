@@ -5,11 +5,11 @@ plugins {
 
 android {
     namespace = "com.kaist.feeplingsupporter"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.kaist.feeplingsupporter"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -64,10 +64,12 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.view)
-    implementation(libs.androidx.camera.core)
-    implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation(libs.play.services.fitness)
+    implementation(libs.play.services.auth)
+    implementation(libs.connect.client)
+    implementation(libs.andoridx.camera.camera2)
     implementation(libs.androidx.camera.extensions)
-
+    implementation("com.google.guava:guava:31.0.1-android")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

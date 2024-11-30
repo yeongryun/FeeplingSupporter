@@ -11,8 +11,10 @@ composeBom = "2024.04.01"
 permissions = "0.30.1"
 cameraLifecycle = "1.4.0"
 cameraVideo = "1.4.0"
-cameraExtension = "1.4.0"
 mlKitFaceDetection = "16.1.5"
+health = "21.0.0"
+helathAuth = "20.7.0"
+healthConnect = "1.1.0-alpha10"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,8 +38,9 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 androidx-camera-extensions =  { group = "androidx.camera", name = "camera-extensions", version.ref = "cameraVideo" }
 androidx-camera-core =  { group = "androidx.camera", name = "camera-core", version.ref = "cameraVideo" }
 andoridx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "cameraVideo" }
-
-
+play-services-fitness = { group = "com.google.android.gms", name = "play-services-fitness", version.ref = "health"}
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "helathAuth" }
+connect-client = {group = "androidx.health.connect", name = "connect-client", version.ref = "healthConnect"}
 ml-kit = { group = "com.google.mlkit", name = "face-detection", version.ref = "mlKitFaceDetection" }
 
 [plugins]

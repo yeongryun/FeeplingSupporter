@@ -31,6 +31,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.kaist.feeplingsupporter.ui.component.CameraHelper
 import com.kaist.feeplingsupporter.ui.component.FaceEmotion
+import com.kaist.feeplingsupporter.ui.component.HrvAnalyzer
+//import com.kaist.feeplingsupporter.ui.component.HrvAnalyzer.readHeartRateData
 import com.kaist.feeplingsupporter.ui.component.MainViewModel
 import com.kaist.feeplingsupporter.ui.component.SelfieEmotionAnalyzer.analyzeEmotion
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
@@ -57,6 +60,12 @@ import java.io.File
 
 @Composable
 fun MainScreen(mainViewModel: MainViewModel) {
+    var heartRate by remember { mutableStateOf<HrvAnalyzer.OneMinuteBpm?>(null) }
+
+    LaunchedEffect(Unit) {
+        heartRate = mainViewModel.getTestHrvData()
+    }
+
     var selfieAnalysisResult: List<FaceEmotion> by remember { mutableStateOf(mutableListOf()) }
     var userSelectedWords: List<EmotionWord> by remember { mutableStateOf(mutableListOf()) }
 
@@ -69,7 +78,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
             userSelectedWords = it
         }
 
-        else -> SolutionScreen()
+        else -> SolutionScreen(heartRate)
     }
 }
 
@@ -114,7 +123,11 @@ fun CaptureScreen(analysisResult: (faceEmotions: List<FaceEmotion>) -> Unit) {
                                 helper.stopCamera()
                                 analysisResult.invoke(result)
                             } else {
-                                Toast.makeText(context, "Face is not detected please try again", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Face is not detected please try again",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 selfieImage = null
                             }
                         }, onError = { error ->
@@ -141,9 +154,11 @@ fun WordsSelectionScreen(mainViewModel: MainViewModel, selected: (List<EmotionWo
     val context = LocalContext.current
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Box( modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 36.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 36.dp)
+        ) {
             Text(
                 text = "Select Words ",
                 modifier = Modifier
@@ -159,7 +174,8 @@ fun WordsSelectionScreen(mainViewModel: MainViewModel, selected: (List<EmotionWo
             Button(
                 onClick = {
                     if (selectedWords.isEmpty()) {
-                        Toast.makeText(context, "Select words at least one", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Select words at least one", Toast.LENGTH_SHORT)
+                            .show()
                     } else {
                         selected.invoke(selectedWords)
                     }
@@ -211,6 +227,7 @@ fun WordsSelectionScreen(mainViewModel: MainViewModel, selected: (List<EmotionWo
         }
     }
 }
+
 inline fun <T> LazyListScope.items(
     items: List<T>,
     noinline key: ((item: T) -> Any)? = null,
@@ -251,7 +268,9 @@ inline fun <T> LazyGridScope.items(
 ) = items(
     count = items.size,
     key = if (key != null) { index: Int -> key(items[index]) } else null,
-    span = if (span != null) { { span(items[it]) } } else null,
+    span = if (span != null) {
+        { span(items[it]) }
+    } else null,
     contentType = { index: Int -> contentType(items[index]) }
 ) {
     itemContent(items[it])
@@ -297,7 +316,9 @@ fun WordItem(
 
 fun isColorDark(color: Color): Boolean = color.luminance() < 0.5
 
+
 @Composable
-fun SolutionScreen() {
+fun SolutionScreen(bpm: HrvAnalyzer.OneMinuteBpm?) {
+
 
 }
