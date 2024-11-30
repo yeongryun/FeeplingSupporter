@@ -319,6 +319,7 @@ fun isColorDark(color: Color): Boolean = color.luminance() < 0.5
 
 @Composable
 fun SolutionScreen(bpm: HrvAnalyzer.SimpleBpm?) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-
+    }
 }

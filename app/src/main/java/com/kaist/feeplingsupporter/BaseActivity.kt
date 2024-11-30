@@ -40,6 +40,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.kaist.feeplingsupporter.ui.alarm.HeartRateMonitorService
+import com.kaist.feeplingsupporter.ui.screen.IntroScreen
 import com.kaist.feeplingsupporter.ui.theme.FeeplingSupporterTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -51,8 +52,10 @@ class BaseActivity : ComponentActivity() {
             FeeplingSupporterTheme {
                 RequestCameraAndRecordAudioPermissions(
                     areGranted = {
-                        startHeartRateMonitorService(this)
-                        navigateToMainActivity()
+                        IntroScreen {
+                            startHeartRateMonitorService(this)
+                            navigateToMainActivity()
+                        }
                     },
                     areDenied = {
                         ShowRequestPermission(it)
@@ -73,7 +76,6 @@ class BaseActivity : ComponentActivity() {
 
 private fun startHeartRateMonitorService(context: Context) {
     val intent = Intent(context, HeartRateMonitorService::class.java)
-    Log.d("YRLEE", "context :$context")
     context.startForegroundService(intent) // Foreground Service 시작
 }
 
@@ -161,14 +163,12 @@ fun RequestCameraAndRecordAudioPermissions(
 
         if (permissionsState.allPermissionsGranted) {
             val account = GoogleSignIn.getAccountForExtension(context, fitnessOptions)
-            Log.d("YRLEE", "fitnessPermissionState : ${GoogleSignIn.hasPermissions(account, fitnessOptions)}")
         }
     }
 
     if (permissionsState.allPermissionsGranted ) {
         areGranted.invoke()
     } else {
-        Log.d("YRLEE", "fail fitnessPermissionState : $fitnessPermissionState")
         Toast.makeText(
             LocalContext.current,
             "원할한 사용을 위하여 Permission 체크를 부탁드립니다. " +
