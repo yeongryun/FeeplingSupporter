@@ -4,6 +4,7 @@ import android.app.Application
 import android.graphics.Bitmap
 import androidx.lifecycle.AndroidViewModel
 import com.kaist.feeplingsupporter.ui.data.AgeGroup
+import com.kaist.feeplingsupporter.ui.data.EmotionSubTitle
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
 import com.kaist.feeplingsupporter.ui.data.Gender
 import com.kaist.feeplingsupporter.ui.data.Solution
@@ -21,7 +22,7 @@ private const val gamma = 0.5
 
 class MainViewModel(app: Application): AndroidViewModel(app) {
     private val emotionDetector = EmotionDetector()
-    private val wordsList = EmotionWord.entries
+    private val wordsEmotionAnalyzer = WordsEmotionAnalyzer()
 
     private val executor = Executors.newSingleThreadExecutor()
     private val dispatcher = executor.asCoroutineDispatcher()
@@ -41,7 +42,14 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
 
     // Hrv Data
     fun getHrvData(): Double = TODO()
-//
+
+    fun showRandomWords() = wordsEmotionAnalyzer.showRandomWords()
+
+    fun getWordsColorBySubTitle(emotionWord: EmotionWord) =
+        wordsEmotionAnalyzer.getWordsColorBySubTitle(emotionWord.subtitle)
+
+    fun List<EmotionWord>.calcDegree() = wordsEmotionAnalyzer.calcDegree(this)
+
 //    suspend fun detectSelfieEmotion(): EmotionDegree = withContext(scope.coroutineContext + job) {
 //        val emotionDegree = emotionDetector.detectWithSelfieImage(getSelfieImage())
 //        detectedSelfieEmotion = emotionDegree
@@ -68,11 +76,6 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
         detectedHrvEmotion = 0.0
     }
 
-    fun chooseSolution(ageGroup: AgeGroup, gender: Gender) {
-        val results = Solution.values().filter { it.gender == ageGroup && it.gender == gender }
-
-        val s = results.map { it.solution }
-    }
     private fun handleError(throwable: Throwable): Unit = TODO()
 
     override fun onCleared() {
