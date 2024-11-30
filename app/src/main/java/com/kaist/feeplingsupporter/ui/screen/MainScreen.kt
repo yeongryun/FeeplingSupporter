@@ -59,8 +59,8 @@ import com.kaist.feeplingsupporter.ui.data.EmotionWord
 import java.io.File
 
 @Composable
-fun MainScreen(mainViewModel: MainViewModel) {
-    var heartRate by remember { mutableStateOf<HrvAnalyzer.OneMinuteBpm?>(null) }
+fun MainScreen(mainViewModel: MainViewModel, isAlarmTriggered: Boolean) {
+    var heartRate by remember { mutableStateOf<HrvAnalyzer.SimpleBpm?>(null) }
 
     LaunchedEffect(Unit) {
         heartRate = mainViewModel.getTestHrvData()
@@ -318,7 +318,7 @@ fun isColorDark(color: Color): Boolean = color.luminance() < 0.5
 
 
 @Composable
-fun SolutionScreen(bpm: HrvAnalyzer.OneMinuteBpm?) {
+fun SolutionScreen(bpm: HrvAnalyzer.SimpleBpm?) {
 
 
 }

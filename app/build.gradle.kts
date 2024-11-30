@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.andoridx.camera.camera2)
     implementation(libs.androidx.camera.extensions)
     implementation("com.google.guava:guava:31.0.1-android")
+    implementation("androidx.work:work-runtime-ktx:2.8.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

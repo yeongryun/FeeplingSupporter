@@ -1,18 +1,9 @@
 package com.kaist.feeplingsupporter.ui.component
 
 import android.app.Application
-import android.content.Intent
-import android.graphics.Bitmap
-import android.net.Uri
-import android.util.Log
 import androidx.annotation.VisibleForTesting
-import androidx.health.connect.client.HealthConnectClient
 import androidx.lifecycle.AndroidViewModel
-import com.kaist.feeplingsupporter.ui.data.AgeGroup
-import com.kaist.feeplingsupporter.ui.data.EmotionSubTitle
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
-import com.kaist.feeplingsupporter.ui.data.Gender
-import com.kaist.feeplingsupporter.ui.data.Solution
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,9 +11,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.withContext
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.concurrent.Executors
-import kotlin.random.Random
 
 private const val alpah = 0.25
 private const val beta = 0.25
@@ -51,29 +42,21 @@ class MainViewModel(app: Application): AndroidViewModel(app) {
 
 
     // Hrv Data
-    suspend fun getHrvData(): HrvAnalyzer.OneMinuteBpm {
+    suspend fun getHrvData(): HrvAnalyzer.SimpleBpm {
         val now = LocalDateTime.now()
         val oneMinuteAgo = now.minusMinutes(1)
 
-        val hrv = hrvAnalyzer.aggregateStepsIntoMinutes(oneMinuteAgo, now)
+        val hrv = hrvAnalyzer.aggregateHeartRateData(oneMinuteAgo, now, Duration.ofMinutes(1L))
 
         val max = hrv.maxBy { bpm -> bpm.maxBpm }.maxBpm
         val min = hrv.minBy { bpm -> bpm.minBpm }.minBpm
         val avg = hrv.map { bpm -> bpm.avgBpm }.average()
 
-        return HrvAnalyzer.OneMinuteBpm(max, min, avg)
+        return HrvAnalyzer.SimpleBpm(max, min, avg)
     }
 
     @VisibleForTesting
-    suspend fun getTestHrvData(): HrvAnalyzer.OneMinuteBpm {
-        return withContext(Dispatchers.Default) {
-            val min = Random.nextInt(30, 80)
-            val max = Random.nextInt(min+10, 230)
-            val avg = Random.nextInt(min + 30, max - 10)
-
-            HrvAnalyzer.OneMinuteBpm(max.toLong(), min.toLong(), avg.toDouble())
-        }
-    }
+    suspend fun getTestHrvData(): HrvAnalyzer.SimpleBpm = hrvAnalyzer.getTestHrvData()
 
     fun showRandomWords() = wordsEmotionAnalyzer.showRandomWords()
 
