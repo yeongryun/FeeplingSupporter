@@ -28,6 +28,8 @@ private const val alpah = 0.25
 private const val beta = 0.25
 private const val gamma = 0.5
 
+typealias EmotionDegree = Double // -1.0 ~ 1.0
+
 class MainViewModel(app: Application): AndroidViewModel(app) {
     private val wordsEmotionAnalyzer = WordsEmotionAnalyzer()
     private val hrvAnalyzer = HrvAnalyzer(app.baseContext)
