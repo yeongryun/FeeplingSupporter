@@ -32,7 +32,7 @@ class HeartRateMonitorService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
             while (true) {
-                delay(10_000) // 10초 간격으로 실행
+                delay(20_000) // 20초 간격으로 실행
                 val heartRate = hrvAnalyzer.getTestHrvData()
 
                 if (heartRate.maxBpm > 100) {

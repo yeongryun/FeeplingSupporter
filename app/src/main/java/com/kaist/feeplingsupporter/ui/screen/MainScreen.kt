@@ -34,6 +34,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -345,6 +347,7 @@ fun SolutionScreen(
     val emotionLevel by remember { mutableStateOf(mainViewModel.decideEmotionLevel(hrv, selfieAnalysisResult, userSelectedWords)) }
     var solutionRefreshCounts by remember { mutableIntStateOf(0) }
     var solutions by remember { mutableStateOf(mainViewModel.getSolutions(emotionLevel, solutionRefreshCounts)) }
+    var emotionResultExpanded by remember { mutableStateOf(false) }
 
     // Screen Layout
     Column(
@@ -416,6 +419,87 @@ fun SolutionScreen(
                         SolutionCard(solution)
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "Emotion Detect Result",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, color = Color.Black)
+                )
+
+                IconButton(onClick = { emotionResultExpanded = !emotionResultExpanded }) {
+                    if (emotionResultExpanded) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowUp,
+                            contentDescription = "Expand Dropdown"
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Expand Dropdown"
+                        )
+                    }
+                }
+            }
+
+            if (emotionResultExpanded) {
+                Text(
+                    text = "Hrv :: avg  ${hrv?.avgBpm ?: 0}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "Hrv :: min  ${hrv?.minBpm ?: 0}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "Hrv :: max  ${hrv?.maxBpm ?: 0}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "selfiAnalysis ::  positivityScore : ${selfieAnalysisResult.firstOrNull()?.positivityScore?: 0}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "selfiAnalysis ::  smilingProbability : ${selfieAnalysisResult.firstOrNull()?.smilingProbability}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "selfiAnalysis ::  leftEyeOpenProbability : ${selfieAnalysisResult.firstOrNull()?.leftEyeOpenProbability}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "selfiAnalysis ::  rightEyeOpenProbability : ${selfieAnalysisResult.firstOrNull()?.rightEyeOpenProbability}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Text(
+                    text = "userSelectedWords ::",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    userSelectedWords.forEach {
+                        Text(
+                            text = "${it.subtitle}  / ",
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal, color = Color.Gray)
+                        )
+                    }
+                }
+
             }
         }
 
