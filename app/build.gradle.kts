@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
     implementation("com.google.guava:guava:31.0.1-android")
     implementation("androidx.work:work-runtime-ktx:2.8.0")
+    implementation(libs.serializationJson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

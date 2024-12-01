@@ -24,13 +24,12 @@ import com.kaist.feeplingsupporter.ui.theme.Blue80
 import kotlinx.coroutines.delay
 
 @Composable
-fun IntroScreen(onTimeout: () -> Unit) {
+fun IntroScreen(onTimeout: @Composable () -> Unit) {
     // Animation for the text opacity
+    var needToDelayTime: Boolean by remember { mutableStateOf(false) }
     val infiniteTransition = rememberInfiniteTransition()
     val alpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
+        initialValue = 0.3f, targetValue = 1f, animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 1000, easing = LinearEasing),
             repeatMode = RepeatMode.Reverse
         ), label = ""
@@ -39,37 +38,42 @@ fun IntroScreen(onTimeout: () -> Unit) {
     // Timer to switch to the next screen
     LaunchedEffect(Unit) {
         delay(3000) // 3 seconds delay
-        onTimeout() // Call the function to move to the next screen
+        needToDelayTime = true
     }
 
-    // UI
-    Box(
-        modifier = Modifier
-            .fillMaxSize().background(Blue80),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+
+    if (needToDelayTime) {
+        onTimeout() // Call the function to move to the next screen
+    } else {
+        // UI
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Blue80),
+            contentAlignment = Alignment.Center
         ) {
-            // Icon
-            Image(
-                painter = painterResource(id = R.drawable.logo), // Replace with your icon
-                contentDescription = "App Icon",
-                modifier = Modifier.size(100.dp)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Icon
+                Image(
+                    painter = painterResource(id = R.drawable.logo), // Replace with your icon
+                    contentDescription = "App Icon", modifier = Modifier.size(100.dp)
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Animated Text
-            Text(
-                text = "Feeling Supporter",
-                color = Color.Black,
-                fontSize = 24.sp,
-                fontFamily = FontFamily.SansSerif,
-                fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.alpha(alpha) // Apply the animated opacity
-            )
+                // Animated Text
+                Text(
+                    text = "Feeling Supporter",
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                    fontFamily = FontFamily.SansSerif,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.alpha(alpha) // Apply the animated opacity
+                )
+            }
         }
     }
 }

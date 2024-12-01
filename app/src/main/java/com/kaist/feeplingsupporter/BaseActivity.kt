@@ -41,6 +41,8 @@ import com.google.android.gms.fitness.FitnessOptions
 import com.google.android.gms.fitness.data.DataType
 import com.kaist.feeplingsupporter.ui.alarm.HeartRateMonitorService
 import com.kaist.feeplingsupporter.ui.screen.IntroScreen
+import com.kaist.feeplingsupporter.ui.screen.SignupScreen
+import com.kaist.feeplingsupporter.ui.screen.loadUserData
 import com.kaist.feeplingsupporter.ui.theme.FeeplingSupporterTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -53,8 +55,16 @@ class BaseActivity : ComponentActivity() {
                 RequestCameraAndRecordAudioPermissions(
                     areGranted = {
                         IntroScreen {
-                            startHeartRateMonitorService(this)
-                            navigateToMainActivity()
+                            val userData = loadUserData(this)
+                            if (userData != null) {
+                                startHeartRateMonitorService(this)
+                                navigateToMainActivity()
+                            } else {
+                                SignupScreen {
+                                    startHeartRateMonitorService(this)
+                                    navigateToMainActivity()
+                                }
+                            }
                         }
                     },
                     areDenied = {

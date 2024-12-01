@@ -1,5 +1,8 @@
 package com.kaist.feeplingsupporter.ui.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Solution(
     val ageGroup: AgeGroup,
     val gender: Gender,
@@ -61,6 +64,7 @@ enum class Solution(
     Solution50(AgeGroup.SIXTY_ABOVE, Gender.MALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.NEGATIVE_LOW, "Reflect on what resilience means to you and journal it.", Type.RESILIENCE_TRAINING)
 }
 
+@Serializable
 enum class AgeGroup {
     TEENAGE,
     TWENTY,
@@ -70,6 +74,7 @@ enum class AgeGroup {
     SIXTY_ABOVE
 }
 
+@Serializable
 enum class Type {
     ACCEPTANCE_AND_COMMITMENT_THERAPY,
     BEHAVIORAL_DISTRACTION,
@@ -79,19 +84,23 @@ enum class Type {
 }
 
 
+@Serializable
 enum class Gender {
     MALE,
     FEMALE
 }
 
+@Serializable
 enum class Personality {
     INTROVERT, EXTROVERT
 }
 
+@Serializable
 enum class Interest {
     PHYSICAL, SOCIAL
 }
 
+@Serializable
 enum class EmotionLevel {
     POSITIVE_HIGH,
     POSITIVE_MODERATE,
