@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kaist.feeplingsupporter.ui.data.Gender
+import com.kaist.feeplingsupporter.ui.data.Interest
 import com.kaist.feeplingsupporter.ui.data.Personality
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
@@ -51,7 +52,8 @@ data class UserData(
     val name: String,
     val age: Int,
     val gender: Gender,
-    val personality: Personality
+    val personality: Personality,
+    val interest: Interest
 )
 
 fun saveUserData(context: Context, userData: UserData) {
@@ -93,6 +95,7 @@ fun SignupScreen(onSignup: () -> Unit) {
 
     var gender: Gender by remember { mutableStateOf(Gender.MALE) }
     var personality: Personality by remember { mutableStateOf(Personality.INTROVERT) }
+    var interest: Interest by remember { mutableStateOf(Interest.SOCIAL) }
 
     val years = (1970..2020).map { it.toString() }
 
@@ -190,6 +193,12 @@ fun SignupScreen(onSignup: () -> Unit) {
                 personality = it
             }
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            InterestSelector(interest) {
+                interest = it
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
         }
 
@@ -197,7 +206,7 @@ fun SignupScreen(onSignup: () -> Unit) {
         Button(
             onClick = {
                 if (name.isNotBlank() && calculatedAge != 0) {
-                    val userData = UserData(name, calculatedAge, gender, personality)
+                    val userData = UserData(name, calculatedAge, gender, personality, interest)
                     saveUserData(context, userData)
                     onSignup()
                 }
@@ -245,6 +254,46 @@ fun PersonalityOption(
         RadioButton(selected = isSelected, onClick = onSelect)
         Text(
             text = personality.name,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 10.sp, fontStyle = FontStyle.Italic
+            ),
+            color = Color.Black,
+            modifier = Modifier.padding(start = 4.dp) // Padding for better spacing
+        )
+    }
+}
+
+@Composable
+fun InterestSelector(interest: Interest, onInterestSelected: (Interest) -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text("Interest:")
+
+        InterestOption(interest = Interest.SOCIAL,
+            isSelected = interest == Interest.SOCIAL,
+            onSelect = { onInterestSelected(Interest.SOCIAL) })
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        InterestOption(interest = Interest.PHYSICAL,
+            isSelected = interest == Interest.PHYSICAL,
+            onSelect = { onInterestSelected(Interest.PHYSICAL) })
+    }
+}
+
+@Composable
+fun InterestOption(
+    interest: Interest, isSelected: Boolean, onSelect: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = isSelected, onClick = onSelect)
+        Text(
+            text = interest.name,
             style = MaterialTheme.typography.bodySmall.copy(
                 fontSize = 10.sp, fontStyle = FontStyle.Italic
             ),

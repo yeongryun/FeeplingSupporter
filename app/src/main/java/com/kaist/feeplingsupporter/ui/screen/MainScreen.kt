@@ -10,12 +10,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
@@ -26,13 +34,18 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,6 +59,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -56,6 +70,7 @@ import com.kaist.feeplingsupporter.ui.component.HrvAnalyzer
 import com.kaist.feeplingsupporter.ui.component.MainViewModel
 import com.kaist.feeplingsupporter.ui.component.SelfieEmotionAnalyzer.analyzeEmotion
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
+import com.kaist.feeplingsupporter.ui.data.Solution
 import java.io.File
 
 @Composable
@@ -78,7 +93,10 @@ fun MainScreen(mainViewModel: MainViewModel, isAlarmTriggered: Boolean) {
             userSelectedWords = it
         }
 
-        else -> SolutionScreen(heartRate)
+        else -> SolutionScreen(mainViewModel, heartRate, selfieAnalysisResult, userSelectedWords) {
+            selfieAnalysisResult = emptyList()
+            userSelectedWords = emptyList()
+        }
     }
 }
 
@@ -316,10 +334,139 @@ fun WordItem(
 
 fun isColorDark(color: Color): Boolean = color.luminance() < 0.5
 
+@Composable
+fun SolutionScreen(
+    mainViewModel: MainViewModel,
+    hrv: HrvAnalyzer.SimpleBpm?,
+    selfieAnalysisResult: List<FaceEmotion>,
+    userSelectedWords: List<EmotionWord>,
+    onFinish: () -> Unit,
+) {
+    val emotionLevel by remember { mutableStateOf(mainViewModel.decideEmotionLevel(hrv, selfieAnalysisResult, userSelectedWords)) }
+    var solutionRefreshCounts by remember { mutableIntStateOf(0) }
+    var solutions by remember { mutableStateOf(mainViewModel.getSolutions(emotionLevel, solutionRefreshCounts)) }
+
+    // Screen Layout
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(modifier = Modifier.fillMaxWidth())  {
+            Text(
+                text = "Solutions",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Description Text
+            Text(
+                text = "Scroll through the cards to the right and select the solution that is most helpful to you at this time.",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Check out other solutions",
+                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
+                )
+
+                IconButton(
+                    onClick = {
+                        solutionRefreshCounts += 1
+                        solutions = mainViewModel.getSolutions(emotionLevel, solutionRefreshCounts)
+                        Log.d("YRLEE", "solution 222: ${solutions.size}")
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Refresh Solutions"
+                    )
+                }
+            }
+
+            if (solutions.isEmpty()) {
+                Text(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp).wrapContentHeight(align = Alignment.CenterVertically),
+                    text = "No solutions found (preparing)",
+                    style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray),
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Light,
+                    fontSize = 18.sp
+                )
+            } else {
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 180.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp)
+                ) {
+                    items(solutions) { solution ->
+                        SolutionCard(solution)
+                    }
+                }
+            }
+        }
+
+        Button(
+            onClick = onFinish,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp)
+        ) {
+            Text(text = "Finish")
+        }
+    }
+}
 
 @Composable
-fun SolutionScreen(bpm: HrvAnalyzer.SimpleBpm?) {
-    Column(modifier = Modifier.fillMaxSize()) {
+fun SolutionCard(solution: Solution) {
+    Card(
+        modifier = Modifier
+            .width(250.dp) // Fixed card width
+            .height(300.dp) // Fixed card height
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Title (Type)
+            Text(
+                text = solution.type.name,
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Light),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
 
+            Spacer(modifier = Modifier.weight(1f)) // Push content to center
+
+            // Solution Body
+            Text(
+                text = solution.solution,
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(horizontal = 8.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f)) // Push content to center
+        }
     }
 }

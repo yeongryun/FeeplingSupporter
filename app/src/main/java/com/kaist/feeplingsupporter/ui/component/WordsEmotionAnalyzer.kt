@@ -1,6 +1,7 @@
 package com.kaist.feeplingsupporter.ui.component
 
 import android.graphics.Color
+import android.util.Log
 import com.kaist.feeplingsupporter.ui.data.EmotionSubTitle
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
 import com.kaist.feeplingsupporter.ui.theme.Blue20
@@ -103,11 +104,7 @@ class WordsEmotionAnalyzer {
     }
 
     fun calcDegree(emotions: List<EmotionWord>): Double {
-        var degree = 0.0
-        emotions.forEach {
-            degree += it.subtitle.degree
-        }
-        return degree
+        return emotions.map { it.subtitle.degree }.average()
     }
 
     fun getWordsColorBySubTitle(emotionSubTitle: EmotionSubTitle) = when (emotionSubTitle) {
