@@ -12,6 +12,8 @@ import androidx.core.app.NotificationCompat
 import com.kaist.feeplingsupporter.BaseActivity
 import com.kaist.feeplingsupporter.MainActivity
 import com.kaist.feeplingsupporter.ui.component.HrvAnalyzer
+import com.kaist.feeplingsupporter.ui.data.AgeGroup
+import com.kaist.feeplingsupporter.ui.screen.loadUserData
 import kotlinx.coroutines.*
 
 class HeartRateMonitorService : Service() {
@@ -30,13 +32,50 @@ class HeartRateMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+
         scope.launch {
             while (true) {
+                val userData = loadUserData(this@HeartRateMonitorService)
+
+                val ageGroup = when (userData?.age) {
+                    in 0..19 -> AgeGroup.TEENAGE
+                    in 20..29 -> AgeGroup.TWENTY
+                    in 30..39 -> AgeGroup.THIRTY
+                    in 40..49 -> AgeGroup.FOURTY
+                    in 50..59 -> AgeGroup.FIFTY
+                    in 60.. 100 -> AgeGroup.SIXTY_ABOVE
+                    else -> AgeGroup.THIRTY
+                }
+
                 delay(20_000) // 20초 간격으로 실행
                 val heartRate = hrvAnalyzer.getTestHrvData()
 
-                if (heartRate.maxBpm > 100) {
-                    sendHeartRateAlert(heartRate)
+                when (ageGroup) {
+                    AgeGroup.TEENAGE,AgeGroup.TWENTY,AgeGroup.THIRTY -> {
+                        when(heartRate.maxBpm) {
+                            in 110..150 -> sendHeartRateAlert(heartRate, false)
+                            in 150..240 -> sendHeartRateAlert(heartRate, true)
+                        }
+                    }
+                    AgeGroup.FOURTY -> {
+                        when(heartRate.maxBpm) {
+                            in 110..140 -> sendHeartRateAlert(heartRate, false)
+                            in 140..240 -> sendHeartRateAlert(heartRate, true)
+                        }
+                    }
+                    AgeGroup.FIFTY -> {
+                        when(heartRate.maxBpm) {
+                            in 90..130 -> sendHeartRateAlert(heartRate, false)
+                            in 130..240 -> sendHeartRateAlert(heartRate, true)
+                        }
+                    }
+                    AgeGroup.SIXTY_ABOVE -> {
+                        when(heartRate.maxBpm) {
+                            in 80..130 -> sendHeartRateAlert(heartRate, false)
+                            in 130..240 -> sendHeartRateAlert(heartRate, true)
+                        }
+                    }
                 }
             }
         }
@@ -80,7 +119,7 @@ class HeartRateMonitorService : Service() {
         manager.createNotificationChannel(channel)
     }
 
-    private fun sendHeartRateAlert(heartRate: HrvAnalyzer.SimpleBpm) {
+    private fun sendHeartRateAlert(heartRate: HrvAnalyzer.SimpleBpm, isHighLevel: Boolean) {
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("alarm", true) // 알람 클릭 시 true 전달
         }
@@ -92,13 +131,22 @@ class HeartRateMonitorService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val notification = NotificationCompat.Builder(this, "heart_rate_monitor_channel")
-            .setContentTitle("High Heart Rate Alert!")
-            .setContentText("Your heart rate is ${heartRate.maxBpm} BPM.")
-            .setSmallIcon(android.R.drawable.ic_dialog_alert)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .build()
+        val notification = if (isHighLevel) {
+            NotificationCompat.Builder(this, "heart_rate_monitor_channel")
+                .setContentTitle("Emergency High Heart Rate Alert!!!")
+                .setContentText("Your heart rate is ${heartRate.maxBpm} BPM.")
+                .setSmallIcon(android.R.drawable.ic_notification_overlay)
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setContentIntent(pendingIntent)
+                .build()
+        } else {
+            NotificationCompat.Builder(this, "heart_rate_monitor_channel")
+                .setContentTitle("High Heart Rate Alert")
+                .setContentText("Your heart rate is ${heartRate.maxBpm} BPM.")
+                .setSmallIcon(android.R.drawable.ic_dialog_alert)
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setContentIntent(pendingIntent)
+                .build()
+        }
+
 
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify((System.currentTimeMillis() % 10000).toInt(), notification)
