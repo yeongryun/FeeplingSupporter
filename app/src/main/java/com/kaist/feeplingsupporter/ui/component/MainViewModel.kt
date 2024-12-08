@@ -34,7 +34,6 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
         val detectedHrvEmotion = calculateEmotionScore(hrv?.avgBpm ?: 100.0)
         val detectedWordsEmotion = userSelectedWords.calcEmotionWordDegree()
 
-        Log.d("YRLEE", "detectedSelfieEmotion : $detectedSelfieEmotion, detectedHrvEmotion : $detectedHrvEmotion, detectedWordsEmotion : $detectedWordsEmotion")
         val userData =
             requireNotNull(loadUserData(app.baseContext)) { "userData is not initialized" }
         val ageFactor = 1 - userData.age.toDouble() / 100
@@ -44,9 +43,6 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
         }
 
         val hrvAdjusted = detectedHrvEmotion * ageFactor * genderFactor
-
-        Log.d("YRLEE", "hrvAdjusted : $hrvAdjusted, detectedSelfieEmotion : $detectedSelfieEmotion, detectedWordsEmotion : $detectedWordsEmotion")
-
 
         val emotionDegree = clamp(
             alpah * hrvAdjusted + beta * detectedSelfieEmotion + gamma * detectedWordsEmotion,
@@ -98,7 +94,6 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
             else -> AgeGroup.SIXTY_ABOVE
         }
 
-        Log.d("YRLEE", "input : $ageGroup, / $userData.gender, / $userData.personality, /  $userData.interest / $emotionLevel")
         return when (solutionRefreshCount) {
             0 -> this.ageGroup == ageGroup && this.gender == userData.gender && this.personality == userData.personality && this.interest == userData.interest && this.emotionLevel == emotionLevel
             1 -> this.gender == userData.gender && this.personality == userData.personality && this.interest == userData.interest && this.emotionLevel == emotionLevel

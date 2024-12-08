@@ -61,7 +61,7 @@ enum class Solution(
     Solution47(AgeGroup.FOURTY, Gender.MALE, Personality.INTROVERT, Interest.PHYSICAL, EmotionLevel.POSITIVE_LOW, "Imagine completing a long-term project at work and receiving recognition for it.", Type.POSITIVE_IMAGERY),
     Solution48(AgeGroup.FOURTY, Gender.FEMALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.POSITIVE_MODERATE, "Host a vision board activity with friends and discuss your future plans.", Type.POSITIVE_IMAGERY),
     Solution49(AgeGroup.FIFTY, Gender.FEMALE, Personality.INTROVERT, Interest.PHYSICAL, EmotionLevel.POSITIVE_LOW, "Visualize a peaceful retirement activity like gardening and plan how to make it real.", Type.POSITIVE_IMAGERY),
-    Solution50(AgeGroup.SIXTY_ABOVE, Gender.MALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.POSITIVE_MODERATE, "Share with your family how you imagine your upcoming birthday celebration and what it means to you.", Type.POSITIVE_IMAGERY)
+    Solution50(AgeGroup.SIXTY_ABOVE, Gender.MALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.POSITIVE_MODERATE, "Share with your family how you imagine your upcoming birthday celebration and what it means to you.", Type.POSITIVE_IMAGERY),
     Solution51(AgeGroup.TEENAGE, Gender.MALE, Personality.INTROVERT, Interest.PHYSICAL, EmotionLevel.NEGATIVE_HIGH, "Write emotions on paper and burn them in a safe setting.", Type.ACCEPTANCE_AND_COMMITMENT_THERAPY),
     Solution52(AgeGroup.TWENTY, Gender.FEMALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.NEGATIVE_MODERATE, "Host a dinner discussion on emotional acceptance.", Type.ACCEPTANCE_AND_COMMITMENT_THERAPY),
     Solution53(AgeGroup.THIRTY, Gender.MALE, Personality.EXTROVERT, Interest.SOCIAL, EmotionLevel.NEGATIVE_MODERATE, "Volunteer and use the present activity to reflect.", Type.ACCEPTANCE_AND_COMMITMENT_THERAPY),
@@ -127,6 +127,11 @@ enum class AgeGroup {
 
 @Serializable
 enum class Type {
+    SAVORING_POSITIVE_EXPERIENCE,
+    POSITIVE_REAPPRAISAL,
+    MINDFULNESS_AND_MEDITATION,
+    GRATITUDE_PRACTICES,
+    POSITIVE_IMAGERY,
     ACCEPTANCE_AND_COMMITMENT_THERAPY,
     BEHAVIORAL_DISTRACTION,
     COGNITIVE_REAPPRAISAL_AND_REFOCUSING,
