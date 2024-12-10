@@ -60,14 +60,13 @@ class MainViewModel(private val app: Application): AndroidViewModel(app) {
             else -> EmotionLevel.NEGATIVE_HIGH
         }
 
-        Log.d("YRLEE", "@@@@ emotion Degree : $emotionDegree result : $result")
         return result
     }
 
     private fun calculateEmotionScore(heartRate: Double, minHeartRate: Int = 40, maxHeartRate: Int = 200): Double {
         // 심박수가 최소값과 최대값 사이인지 확인
         if (heartRate < minHeartRate || heartRate > maxHeartRate) {
-            throw IllegalArgumentException("Heart rate must be between $minHeartRate and $maxHeartRate")
+            throw IllegalArgumentException("Heart rate($heartRate) must be between $minHeartRate and $maxHeartRate")
         }
 
         // Min-Max Normalization을 통해 -1 ~ +1 범위로 변환

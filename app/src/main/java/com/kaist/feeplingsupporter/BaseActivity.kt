@@ -47,9 +47,10 @@ import com.kaist.feeplingsupporter.ui.theme.FeeplingSupporterTheme
 
 @OptIn(ExperimentalPermissionsApi::class)
 class BaseActivity : ComponentActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
         setContent {
             FeeplingSupporterTheme {
                 RequestCameraAndRecordAudioPermissions(
@@ -57,11 +58,9 @@ class BaseActivity : ComponentActivity() {
                         IntroScreen {
                             val userData = loadUserData(this)
                             if (userData != null) {
-                                startHeartRateMonitorService(this)
                                 navigateToMainActivity()
                             } else {
                                 SignupScreen {
-                                    startHeartRateMonitorService(this)
                                     navigateToMainActivity()
                                 }
                             }
@@ -80,13 +79,6 @@ class BaseActivity : ComponentActivity() {
         startActivity(intent)
         finish() // BaseActivity 종료 (필요에 따라 생략 가능)
     }
-}
-
-
-
-private fun startHeartRateMonitorService(context: Context) {
-    val intent = Intent(context, HeartRateMonitorService::class.java)
-    context.startForegroundService(intent) // Foreground Service 시작
 }
 
 private fun permissionState() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

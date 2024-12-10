@@ -138,7 +138,6 @@ fun SignupScreen(onSignup: () -> Unit) {
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .clickable {
-                    Log.d("YRLEE", "box click")
                     birthMenuExpanded = true
                 }) {
                 OutlinedTextField(value = selectedYear, onValueChange = {}, label = {
@@ -152,7 +151,6 @@ fun SignupScreen(onSignup: () -> Unit) {
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        Log.d("YRLEE", "text click 2222")
                     }, textStyle = MaterialTheme.typography.bodyMedium.copy(
                     color = if (calculatedAge == 0) Color.LightGray else Color.Black
                 ), trailingIcon = {

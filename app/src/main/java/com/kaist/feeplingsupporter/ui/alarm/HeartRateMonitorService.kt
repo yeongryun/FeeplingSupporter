@@ -32,8 +32,6 @@ class HeartRateMonitorService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-
         scope.launch {
             while (true) {
                 val userData = loadUserData(this@HeartRateMonitorService)
@@ -122,6 +120,9 @@ class HeartRateMonitorService : Service() {
     private fun sendHeartRateAlert(heartRate: HrvAnalyzer.SimpleBpm, isHighLevel: Boolean) {
         val intent = Intent(this, MainActivity::class.java).apply {
             putExtra("alarm", true) // 알람 클릭 시 true 전달
+            putExtra("avgBpm", heartRate.avgBpm)
+            putExtra("maxBpm", heartRate.maxBpm)
+            putExtra("minBpm", heartRate.minBpm)
         }
 
         val pendingIntent = PendingIntent.getActivity(

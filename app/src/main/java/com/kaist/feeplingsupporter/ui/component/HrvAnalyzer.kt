@@ -68,9 +68,9 @@ class HrvAnalyzer(context: Context) {
     @VisibleForTesting
     suspend fun getTestHrvData(): SimpleBpm {
         return withContext(Dispatchers.Default) {
-            val min = Random.nextInt(30, 80)
-            val max = Random.nextInt(min+10, 230)
-            val avg = Random.nextInt(min, max)
+            val min = Random.nextInt(60, 90)
+            val max = Random.nextInt(min+20, 230)
+            val avg = Random.nextInt(min+10, max)
 
             SimpleBpm(max.toLong(), min.toLong(), avg.toDouble())
         }

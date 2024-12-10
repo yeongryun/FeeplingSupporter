@@ -76,11 +76,16 @@ import com.kaist.feeplingsupporter.ui.data.Solution
 import java.io.File
 
 @Composable
-fun MainScreen(mainViewModel: MainViewModel, isAlarmTriggered: Boolean) {
+fun MainScreen(mainViewModel: MainViewModel, isAlarmTriggered: Boolean, cachedHeartRate: HrvAnalyzer.SimpleBpm? = null) {
     var heartRate by remember { mutableStateOf<HrvAnalyzer.SimpleBpm?>(null) }
 
     LaunchedEffect(Unit) {
-        heartRate = mainViewModel.getTestHrvData()
+        heartRate = if (isAlarmTriggered) {
+            cachedHeartRate!!
+        } else {
+            mainViewModel.getTestHrvData()
+        }
+
     }
 
     var selfieAnalysisResult: List<FaceEmotion> by remember { mutableStateOf(mutableListOf()) }
@@ -389,7 +394,6 @@ fun SolutionScreen(
                     onClick = {
                         solutionRefreshCounts += 1
                         solutions = mainViewModel.getSolutions(emotionLevel, solutionRefreshCounts)
-                        Log.d("YRLEE", "solution 222: ${solutions.size}")
                     }
                 ) {
                     Icon(
