@@ -3,6 +3,7 @@ package com.kaist.feeplingsupporter
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.kaist.feeplingsupporter.ui.data.Gender
+import com.kaist.feeplingsupporter.ui.data.Interest
 import com.kaist.feeplingsupporter.ui.data.Personality
 import com.kaist.feeplingsupporter.ui.screen.UserData
 import kotlinx.serialization.Serializable
@@ -30,7 +31,7 @@ class ExampleInstrumentedTest {
 
     @Test
     fun serializationTest() {
-        val userData = UserData("name", 10, Gender.MALE, Personality.INTROVERT)
+        val userData = UserData("name", 10, Gender.MALE, Personality.INTROVERT, Interest.SOCIAL)
 
         val serializedData = Json.encodeToString(userData)
         val deserializedData = Json.decodeFromString<UserData>(serializedData)

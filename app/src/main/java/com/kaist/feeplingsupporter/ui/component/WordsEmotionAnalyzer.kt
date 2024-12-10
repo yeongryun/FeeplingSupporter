@@ -100,7 +100,7 @@ class WordsEmotionAnalyzer {
             optimismWords.random(random),
             contentmentWords.random(random),
             cheerfulnessWords.random(random)
-        ).sorted()
+        ).sorted().shuffled()
     }
 
     fun calcDegree(emotions: List<EmotionWord>): Double {
