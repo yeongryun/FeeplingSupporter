@@ -1,5 +1,6 @@
 package com.kaist.feeplingsupporter.ui.alarm
 
+import android.app.AlarmManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -24,12 +25,16 @@ class HeartRateMonitorService : Service() {
 
     private lateinit var hrvAnalyzer: HrvAnalyzer
 
+    private var pendingIntents = mutableListOf<PendingIntent>()
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         startForeground(1, createNotification())
         hrvAnalyzer = HrvAnalyzer(this)
     }
+
+    private var isFirst = true
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         scope.launch {
@@ -46,7 +51,13 @@ class HeartRateMonitorService : Service() {
                     else -> AgeGroup.THIRTY
                 }
 
-                delay(20_000) // 20초 간격으로 실행
+                if (isFirst) {
+                    delay(3_000)
+                    isFirst = false
+                } else {
+                    delay(20_000) // 20초 간격으로 실행
+                }
+
                 val heartRate = hrvAnalyzer.getTestHrvData()
 
                 when (ageGroup) {
@@ -80,8 +91,21 @@ class HeartRateMonitorService : Service() {
         return START_STICKY
     }
 
+    override fun stopService(name: Intent?): Boolean {
+        pendingIntents.forEach {
+            it.cancel()
+        }
+        pendingIntents.clear()
+        job.cancel()
+        return super.stopService(name)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        pendingIntents.forEach {
+            it.cancel()
+        }
+        pendingIntents.clear()
         job.cancel()
     }
 
@@ -96,7 +120,7 @@ class HeartRateMonitorService : Service() {
             0,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+        ).also(pendingIntents::add)
 
         return NotificationCompat.Builder(this, notificationChannelId)
             .setContentTitle("Heart Rate Monitor")
@@ -104,6 +128,7 @@ class HeartRateMonitorService : Service() {
             .setSmallIcon(android.R.drawable.ic_notification_overlay)
             .setOngoing(true)
             .setContentIntent(pendingIntent) // 알림 클릭 시 실행
+            .setDeleteIntent(pendingIntent)
             .build()
     }
 

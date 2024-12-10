@@ -73,6 +73,8 @@ import com.kaist.feeplingsupporter.ui.component.MainViewModel
 import com.kaist.feeplingsupporter.ui.component.SelfieEmotionAnalyzer.analyzeEmotion
 import com.kaist.feeplingsupporter.ui.data.EmotionWord
 import com.kaist.feeplingsupporter.ui.data.Solution
+import com.kaist.feeplingsupporter.ui.theme.Blue10
+import com.kaist.feeplingsupporter.ui.theme.Blue80
 import java.io.File
 
 @Composable
@@ -104,6 +106,23 @@ fun MainScreen(mainViewModel: MainViewModel, isAlarmTriggered: Boolean, cachedHe
             selfieAnalysisResult = emptyList()
             userSelectedWords = emptyList()
         }
+    }
+}
+
+@Composable
+fun BlockScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize() // 화면 전체를 채우도록 설정
+            .background(Blue80), // 블루 계열 배경색 설정
+        contentAlignment = Alignment.Center // 컨텐츠를 정가운데 배치
+    ) {
+        Text(
+            text = "Please wait until you have received an alert",
+            fontWeight = FontWeight.Bold, // Bold체로 설정
+            color = Color.White, // 글자 색상
+            textAlign = TextAlign.Center // 텍스트 중앙 정렬
+        )
     }
 }
 
